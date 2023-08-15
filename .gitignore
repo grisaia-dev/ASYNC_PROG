@@ -1,0 +1,9 @@
+.DS_Store
+task_1/.cache/
+task_1/bin/
+task_1/build/
+task_1/.vscode/
+task_2/.cache/
+task_2/bin/
+task_2/build/
+task_2/.vscode/
