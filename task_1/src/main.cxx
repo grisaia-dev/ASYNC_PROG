@@ -4,7 +4,7 @@
 #include <vector>
 
 void add_data(std::vector<int>& otherVector);
-void selection_sort(std::vector<int> otherVector, std::promise<std::vector<int>> pr_);
+void selection_sort(std::vector<int>& otherVector);
 
 int main(void) {
     setlocale(LC_ALL, "ru_RU.UTF-8");
@@ -17,11 +17,7 @@ int main(void) {
 
     // Вроде работает как надо, но не совсем понятно
     // ...
-    std::promise<std::vector<int>> f_promise;
-    std::future<std::vector<int>> f_future = f_promise.get_future();
-    auto res = std::async(std::launch::async, selection_sort, data, std::move(f_promise)); // И что делать с возвращаемым значением?
-    f_future.wait();
-    data = std::move(f_future.get());
+    selection_sort(data);
     // ...
 
     std::cout << "После соритровки: ";
@@ -31,18 +27,24 @@ int main(void) {
     return EXIT_SUCCESS;
 }
 
-void selection_sort(std::vector<int> data_, std::promise<std::vector<int>> pr_) {
+void selection_sort(std::vector<int>& data_) {
     int v_size = data_.size();
     int tmp, min = 0;
     for (int i = 0; i < v_size; i++) {
         min = i;
-        for (int j = i; j < v_size; j++)
-            if (data_[min] > data_[j]) min = j;
+        std::promise<int> ff_promise;
+        std::future<int> ff_future = ff_promise.get_future();
+        auto res = std::async(std::launch::async, [&i, &v_size, &data_](int min, std::promise<int> pr_){
+            for (int j = i; j < v_size; j++)
+                if (data_[min] > data_[j]) min = j;
+            pr_.set_value(min);
+        }, min, std::move(ff_promise));
+        ff_future.wait(); // Если это не писать, то работает так же
+        min = ff_future.get();
         tmp = data_[i];
         data_[i] = data_[min];
         data_[min] = tmp;
     }
-    pr_.set_value(data_);
 }
 
 void add_data(std::vector<int>& otherVector) {
