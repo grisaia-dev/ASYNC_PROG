@@ -17,32 +17,6 @@ void parallel_for_each(InputIterator begin, InputIterator end, Function f) {
         block_start = block_end;
         parallel_for_each(block_start, end, f);
     }
-
-
-    //size_t numThreads = std::thread::hardware_concurrency();
-    //
-    //// number of elements for one thread
-    //size_t jobsForThread = range / numThreads;
-    //// number of elements for one thread + remainder
-    //size_t jobsForMainThread = range % numThreads + jobsForThread;
-    //
-    //// minus main thread
-    //std::vector<std::thread> threads(numThreads - 1);
-    //
-    //InputIterator block_start = begin;
-    //InputIterator block_end = begin + jobsForThread;
-    //
-    //for(size_t i = 0; i < numThreads - 1; ++i) {
-    //    threads[i] = std::thread(std::for_each<InputIterator, Function>, block_start, block_end, f);
-    //    block_start = block_end;
-    //    block_end += jobsForThread;
-    //}
-    //
-    //std::for_each(block_start, block_start + jobsForMainThread, f);
-    //
-    //for(auto& t : threads) {
-    //        t.join();
-    //}
 }
 
 void add_data(std::vector<int>& otherVector, int n_ = 50) {
@@ -76,9 +50,6 @@ int main(void) {
     for (auto const &v : data)
         std::cout << " " << v;
     std::cout << std::endl;
-
-    getchar();
-
 
     return EXIT_SUCCESS;
 }
